@@ -1,31 +1,23 @@
-use std::env;
+use std::fs::File;
+use std::io;
+use std::path::Path;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() < 2 {
-        print_help();
-        return;
-    }
-
-    let command = &args[1];
-
-    if command == "add" {
-        if args.len() < 3 {
-            eprintln!("Please provide a journal entry.");
-            eprintln!("Example: cargo run -- add \"Today was a good day\"");
-            return;
-        }
-
-        let entry = args[2..].join(" ");
-        println!("Journal entry captured: {}", entry);
-    } else {
-        eprintln!("Unknown command: {}", command);
-        print_help();
+    match ensure_journal_file() {
+        Ok(()) => println!("Journey.csv is ready."),
+        Err(err) => eprintln!("Failed to prepare Journey.csv : {}", err),
     }
 }
 
-fn print_help() {
-    println!("Usage:");
-    println!("  cargo run -- add \"your journal entry\"");
+fn ensure_journal_file() -> io::Result<()> {
+    let file_path = Path::new("Journey.csv");
+
+    if !file_path.exists() {
+        File::create(file_path)?;
+        println!("Journey.csv created");
+    } else {
+        println!("Journey.csv already exists.");
+    }
+
+    Ok(())
 }
