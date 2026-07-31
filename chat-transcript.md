@@ -413,3 +413,21 @@ Added the `Concept Glossary` section above and committed to growing it continuou
 ## Assistant Commitment
 
 I confirmed I will keep updating this transcript after each chat step.
+
+## User Request
+
+I shared that the pace felt challenging and asked five foundational questions:
+
+1. What is a race pattern?
+2. What is `match`, and why chain methods after `OpenOptions::new()`?
+3. With `io::Result<()>`, should both success and error branches return `Ok(())`?
+4. Why does `Err(err) => Err(err)` appear, and what does it mean?
+5. Why does a pattern guard look like `Err(err) if ... => {}` instead of putting `if` inside braces?
+
+## Assistant Plan
+
+I committed to slowing down and answering these concepts step-by-step before adding more coding complexity.
+
+## User Decision
+
+You chose to proceed with the optimization flow and continue building the CLI tool implementation.

@@ -1,4 +1,4 @@
-use std::fs::File;
+use std::fs::OpenOptions;
 use std::io;
 use std::path::Path;
 
@@ -12,12 +12,20 @@ fn main() {
 fn ensure_journal_file() -> io::Result<()> {
     let file_path = Path::new("Journey.csv");
 
-    if !file_path.exists() {
-        File::create(file_path)?;
-        println!("Journey.csv created");
-    } else {
-        println!("Journey.csv already exists.");
-    }
+    match OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(file_path)
+        {
+            Ok(_) => {
+                println!("Journey.csv created");
+                Ok(())
+            }
+            Err(err) if err.kind() == io::ErrorKind::AlreadyExists => {
+                println!("Joureny.csv already exists");
+                Ok(())
+            }
 
-    Ok(())
+            Err(err) => Err(err),
+        }
 }
