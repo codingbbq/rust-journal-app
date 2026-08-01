@@ -1,5 +1,5 @@
 use std::env;
-use std::fs::{File, OpenOptions};
+use std::fs::{File, OpenOptions, read_to_string};
 use std::io::{self, Write};
 use std::path::Path;
 use chrono::Local;
@@ -35,6 +35,15 @@ fn run(args: Vec<String>) -> io::Result<()> {
         println!("Entry saved");
     } else if command == "list" {
         list_entries()?;
+    } else if command == "search" {
+        if args.len() < 3 {
+            eprintln!("Please provide a search keyword");
+            eprintln!("Example: cargo run -- search rust");
+            return Ok(());
+        }
+
+        let query = args[2..].join(" ");
+        search_entries(&query)?;
     } else {
         eprintln!("Unknown command: {}", command);
         print_help();
@@ -79,7 +88,7 @@ fn escape_csv(input: &str) -> String {
 }
 
 fn list_entries() -> io::Result<()> {
-    let content = std::fs::read_to_string("Journal.csv")?;
+    let content = read_to_string("Journal.csv")?;
     let mut lines = content.lines();
 
     lines.next(); // Skip the header
@@ -101,8 +110,39 @@ fn list_entries() -> io::Result<()> {
     Ok(())
 }
 
+// For Search Command
+fn search_entries(query: &str) -> io::Result<()> {
+    let content = read_to_string("Journal.csv")?;
+    let mut lines = content.lines();
+
+    lines.next(); // Skip the header
+
+    let query_lower = query.to_lowercase();
+    let mut found = 0;
+
+    println!("\n--- Search Results for : {} ---", query);
+
+    for line in lines {
+        let line_lower = line.to_lowercase();
+        if line_lower.contains(&query_lower) {
+            found+= 1;
+            println!("[{}] {}", found, line);
+        }
+    }
+
+    if found == 0 {
+        println!("No matching entries found");
+    } else {
+        println!("--- {} match(es) ---", found);
+    }
+
+    println!();
+    Ok(())
+}
+
 fn print_help() {
     println!("Usage:");
     println!(" Cargo run -- add \"your journal entry\"");
     println!(" Cargo run -- list");
+    println!(" Cargo run -- search rust");
 }
