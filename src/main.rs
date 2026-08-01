@@ -2,7 +2,7 @@ use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::Path;
-use std::time::{SystemTime, UNIX_EPOCH};
+use chrono::Local;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -64,11 +64,8 @@ fn append_entry(entry_text: &str) -> io::Result<()> {
     Ok(())
 }
 
-fn get_timestamp() -> u64 {
-    SystemTime::now()
-    .duration_since(UNIX_EPOCH)
-    .unwrap_or_default()
-    .as_secs()
+fn get_timestamp() -> String {
+    Local::now().format("%Y-%m-%d %H:%M:%S").to_string()
 }
 
 fn format_csv_field(input: &str) -> String {
