@@ -431,3 +431,82 @@ I committed to slowing down and answering these concepts step-by-step before add
 ## User Decision
 
 You chose to proceed with the optimization flow and continue building the CLI tool implementation.
+
+## Step 2: First Real CLI Implementation
+
+### Code Provided
+
+I provided a refactored version of `src/main.rs` with:
+
+- Command parsing via `run(args)` function
+- Automatic CSV file creation with header "entry"
+- `add` command that appends entries into the CSV
+- CSV escaping for embedded quotes
+- Proper error handling using `?` operator
+- New helper functions: `append_entry()` and `escape_csv()`
+
+### New Concepts Introduced
+
+- `&str` type: string slice, a reference to string data (different from owned String)
+- `Write` trait: enables writing to files via `writeln!`
+- `.append(true)` mode: opens file in append-only mode so we don't truncate
+- `writeln!` macro: writes formatted output with newline to file
+- CSV escaping: replacing `"` with `""` to avoid breaking CSV format
+
+### User Execution
+
+You ran:
+```bash
+cargo run
+cargo run -- add "My first real entry"
+cargo run -- add "This is my second  entry to the Journal"
+cat Journey.csv
+```
+
+### Result
+
+Success! [Journey.csv](Journey.csv) now contains two properly formatted entries:
+
+```
+"This is my first entry to the Journal"
+"This is my second  entry to the Journal"
+```
+
+Both are correctly saved and escaped. You also renamed Journey.csv to Journal.csv.
+
+### Bug Encountered
+
+The `writeln!` format string was `"{}{}"` instead of `"{},{}"`, so timestamp and entry were concatenated without a comma separator.
+
+You spotted the fix after it was pointed out. Lesson: in format strings, literal characters like `,` appear as-is in output.
+
+### Step 3: Adding chrono for human-readable timestamps
+
+You decided to replace Unix epoch seconds with formatted timestamps like `2026-08-01 14:32:05`. This requires adding the first external crate: `chrono`.
+
+### Understanding Check
+
+I asked five follow-up questions to verify comprehension:
+
+1. Why do we use `&entry_text` instead of `entry_text` in `append_entry()`?
+2. What does `.append(true)` do differently than `File::create()`?
+3. Why does `escape_csv()` replace `"` with `""`?
+4. Why do we use `args[2..]` and not `args[1..]`?
+5. What happens if you run `cargo run -- add` without providing entry text?
+
+### User Answers
+
+1. We borrow with `&` to avoid copying data into memory.
+2. `.append(true)` preserves earlier file content; `File::create()` truncates (overwrites).
+3. Unclear on CSV escaping necessity.
+4. Misunderstood array indexing; thought args started at index 1.
+5. Correctly identified that it would error with help text printed.
+
+### Clarifications Provided
+
+- **CSV Escaping**: Standard CSV format requires escaping quotes by doubling them. If entry contains `"quote"`, it must be saved as `""quote""` in CSV to avoid breaking the parser.
+- **Array Indexing**: Rust arrays (like JavaScript) start at index 0:
+  - `args[0]` = program name
+  - `args[1]` = command (`add`)
+  - `args[2..]` = entry text (everything from 2nd argument onward)
+  We skip program name and command, grab user text from position 2 onwards.

@@ -2,6 +2,7 @@ use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::{self, Write};
 use std::path::Path;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -45,20 +46,33 @@ fn ensure_journal_file() -> io::Result<()> {
 
     if !file_path.exists() {
         let mut file = File::create(file_path)?;
-        file.write_all(b"entry\n")?;
-        println!("Journey.csv created with header");
+        file.write_all(b"Timestamp,Journal Entry\n")?;
+        println!("Journal.csv created with header");
     }
 
     Ok(())
 }
 
 fn append_entry(entry_text: &str) -> io::Result<()> {
+    let timestamp = get_timestamp();
+
     let mut file = OpenOptions::new()
     .append(true)
-    .open("Journey.csv")?;
+    .open("Journal.csv")?;
 
-    writeln!(file, "\"{}\"", escape_csv(entry_text))?;
+    writeln!(file, "{},{}", timestamp, format_csv_field(entry_text))?;
     Ok(())
+}
+
+fn get_timestamp() -> u64 {
+    SystemTime::now()
+    .duration_since(UNIX_EPOCH)
+    .unwrap_or_default()
+    .as_secs()
+}
+
+fn format_csv_field(input: &str) -> String {
+    format!("\"{}\"", escape_csv(input))
 }
 
 fn escape_csv(input: &str) -> String {
@@ -67,5 +81,5 @@ fn escape_csv(input: &str) -> String {
 
 fn print_help() {
     println!("Usage:");
-    println!(" Cargo run -- add \"your journey entry\"");
+    println!(" Cargo run -- add \"your journal entry\"");
 }
