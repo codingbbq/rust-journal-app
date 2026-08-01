@@ -44,6 +44,8 @@ fn run(args: Vec<String>) -> io::Result<()> {
 
         let query = args[2..].join(" ");
         search_entries(&query)?;
+    } else if command == "stats" {
+        show_stats()?;
     } else {
         eprintln!("Unknown command: {}", command);
         print_help();
@@ -140,9 +142,37 @@ fn search_entries(query: &str) -> io::Result<()> {
     Ok(())
 }
 
+fn show_stats() -> io::Result<()> {
+    let content = read_to_string("Journal.csv")?;
+    let mut lines = content.lines();
+
+    lines.next(); // skip the header
+
+    let entries: Vec<&str> = lines.collect();
+    let total = entries.len();
+
+    let today = Local::now().format("%Y-%m-%d").to_string();
+
+    let mut today_count = 0;
+
+    for line in &entries {
+        if line.starts_with(&today) {
+            today_count += 1;
+        }
+    }
+
+    println!("\n--- Journal Stats ---");
+    println!("Total entries : {}", total);
+    println!("Entries today ({}): {}", today, today_count);
+    println!("-----------------\n");
+
+    Ok(())
+}
+
 fn print_help() {
     println!("Usage:");
     println!(" Cargo run -- add \"your journal entry\"");
     println!(" Cargo run -- list");
     println!(" Cargo run -- search rust");
+    println!(" Cargo run -- stats");
 }

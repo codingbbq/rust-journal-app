@@ -533,3 +533,24 @@ I asked five follow-up questions to verify comprehension:
   - `args[1]` = command (`add`)
   - `args[2..]` = entry text (everything from 2nd argument onward)
   We skip program name and command, grab user text from position 2 onwards.
+
+## Progress Update: list, search, stats completed
+
+You implemented additional commands in [src/main.rs](src/main.rs):
+
+- list
+- search
+- stats
+
+You also refactored file reads by importing `read_to_string` via `use std::fs::{..., read_to_string};`.
+
+### Understanding Check Answers
+
+1. Date match in stats: Correct. `starts_with(today)` works because timestamp starts with `YYYY-MM-DD`.
+2. Header handling: Correct. First line is skipped because it is CSV header.
+3. Timestamp type: Correct. Current timestamp function returns `String`.
+
+### Notes
+
+- Command routing and function separation are improving well.
+- Next recommended feature is `export` (for markdown), then a parsing refactor.
