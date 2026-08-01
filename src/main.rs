@@ -33,6 +33,8 @@ fn run(args: Vec<String>) -> io::Result<()> {
         let entry_text = args[2..].join(" ");
         append_entry(&entry_text)?;
         println!("Entry saved");
+    } else if command == "list" {
+        list_entries()?;
     } else {
         eprintln!("Unknown command: {}", command);
         print_help();
@@ -76,7 +78,31 @@ fn escape_csv(input: &str) -> String {
     input.replace('\"', "\"\"")
 }
 
+fn list_entries() -> io::Result<()> {
+    let content = std::fs::read_to_string("Journal.csv")?;
+    let mut lines = content.lines();
+
+    lines.next(); // Skip the header
+
+    let entries: Vec<&str> = lines.collect();
+
+    if entries.is_empty() {
+        println!("No journal entries yet");
+        return Ok(());
+    }
+
+    println!("\n--- Journal Entries ---");
+    for(index, line) in entries.iter().enumerate() {
+        println!("[{}] {}", index+1, line);
+    }
+
+    println!("--- {} entries --- \n", entries.len());
+
+    Ok(())
+}
+
 fn print_help() {
     println!("Usage:");
     println!(" Cargo run -- add \"your journal entry\"");
+    println!(" Cargo run -- list");
 }

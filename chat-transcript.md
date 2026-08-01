@@ -484,7 +484,30 @@ You spotted the fix after it was pointed out. Lesson: in format strings, literal
 
 You decided to replace Unix epoch seconds with formatted timestamps like `2026-08-01 14:32:05`. This requires adding the first external crate: `chrono`.
 
-### Understanding Check
+#### Changes Made
+
+1. Added `chrono = "0.4"` to `Cargo.toml` under `[dependencies]`
+2. Replaced `use std::time::{SystemTime, UNIX_EPOCH}` with `use chrono::Local`
+3. Changed `get_timestamp()` return type from `u64` to `String`
+4. Used `Local::now().format("%Y-%m-%d %H:%M:%S").to_string()`
+
+#### Key Concepts Learned
+
+- `Cargo.toml` is equivalent to `package.json` in Node.js for managing dependencies
+- Cargo downloads crates from [crates.io](https://crates.io)
+- Return types can be changed when data shape changes
+
+### Current State of src/main.rs
+
+- `run()` handles command dispatch
+- `ensure_journal_file()` creates `Journal.csv` with header if missing
+- `append_entry()` appends timestamped CSV row
+- `get_timestamp()` returns formatted local time string
+- `format_csv_field()` and `escape_csv()` handle CSV safety
+
+### Next Step
+
+Implementing the `list` command to read and display all journal entries.
 
 I asked five follow-up questions to verify comprehension:
 
