@@ -1,5 +1,5 @@
-/// Print usage help.
-pub fn print_help() {
+/// Print usage Manual.
+pub fn print_manual() {
     println!("Usage:");
     println!(" cargo run -- add \"your journal entry\"");
     println!(" cargo run -- list");

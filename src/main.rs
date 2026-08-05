@@ -1,64 +1,44 @@
-use std::env;
 use std::io;
+use clap::Parser;
 mod utils;
 mod commands;
+mod cli;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
+    let cli = cli::Cli::parse();
 
-    match run(args) {
-        Ok(()) => {}
-        Err(err) => eprintln!("Error : {}", err),
+    if let Err(err) = run(cli) {
+        eprintln!("Error: {}", err);
     }
 }
 
-fn run(args: Vec<String>) -> io::Result<()> {
+fn run(cli: cli::Cli) -> io::Result<()> {
     utils::ensure_journal_file()?;
 
-    if args.len() < 2 {
-        commands::print_help();
-        return Ok(());
-    }
-
-    let command = &args[1];
-
-    match command.as_str() {
-        "add" => {
-                if args.len() < 3 {
-                eprintln!("Please provide journal text");
-                eprintln!("Example: cargo run -- add \"Today I learned Rust basics\"");
-                return Ok(());
-            }
-
-            let entry_text = args[2..].join(" ");
+    utils::ensure_journal_file()?;
+    
+    match cli.command {
+        cli::Commands::Add { entry } => {
+            let entry_text = entry.join(" ");
             commands::append_entry(&entry_text)?;
             println!("Entry saved");
         },
-        "list" => commands::list_entries()?,
-        "search" => {
-            if args.len() < 3 {
-                eprintln!("Please provide a search keyword");
-                eprintln!("Example: cargo run -- search rust");
-                return Ok(());
-            }
-
-            let query = args[2..].join(" ");
-            commands::search_entries(&query)?;    
+        cli::Commands::List => {
+            commands::list_entries()?;
+        }
+        cli::Commands::Search { query } => {
+            let query = query.join(" ");
+            commands::search_entries(&query)?;
         },
-        "stats" => commands::show_stats()?,
-        "filter" => {
-            if args.len() < 3 {
-                eprintln!("Please provide a tag to filter by, eg. cargo run -- filter rust");
-                return Ok(());
-            }
-
-            let tag = args[2..].join(" ");
+        cli::Commands::Stats => {
+            commands::show_stats()?;
+        } 
+        cli::Commands::Filter { tag } => {
+            let tag = tag.join(" ");
             commands::filter_entries(&tag)?;
         },
-        "help" => commands::print_help(),
-        _ => {
-            eprintln!("Unknonwn command: {}", command);
-            commands::print_help();
+        cli::Commands::Manual => {
+            commands::print_manual();
         }
     }
 
