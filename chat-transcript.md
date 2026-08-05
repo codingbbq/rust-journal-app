@@ -118,3 +118,12 @@ fn ensure_journal_file() -> io::Result<()> {
 - Verified sub‑commands: `add`, `list`, `search`, `stats`, `filter`, `help`, and the auto‑generated `--help`.
 - The transcript now records this refactor for future reference.
 
+## File creation revisit
+
+### Question
+Lets add clap later. Before that can you tell me a way to optimize how our .csv is created
+
+#### Issues with current implementation
+1) I need to make sure the file name is written correctly everywhere where the file read is being done for eg, in list, search and filter. 
+2) User should be able to name the file as they want. Let's say the file does not exist. Then before creating ask user if they want to create a file and let them enter the file name. If they do not enter anything then go with Journal.csv. 
+3) This file name should be auto used in our code I mean that there should be a way to figure out in this folder which is the .csv file and use it

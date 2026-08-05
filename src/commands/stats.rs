@@ -1,10 +1,12 @@
 use std::fs::read_to_string;
 use std::io;
 use chrono::Local;
+use crate::utils;
 
 /// Show simple statistics.
 pub fn show_stats() -> io::Result<()> {
-    let content = read_to_string("Journal.csv")?;
+    let path = utils::journal_path()?;
+    let content = read_to_string(path)?;
     let mut lines = content.lines();
     lines.next(); // skip header
     let entries: Vec<&str> = lines.collect();

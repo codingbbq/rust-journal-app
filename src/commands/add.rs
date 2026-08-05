@@ -11,9 +11,11 @@ pub fn append_entry(entry_text: &str) -> io::Result<()> {
 
     let tag_field = tags.join(",");
 
+    let path = utils::journal_path()?;
+
     let mut file = OpenOptions::new()
         .append(true)
-        .open("Journal.csv")?;
+        .open(path)?;
 
     writeln!(
         file,

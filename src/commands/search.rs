@@ -1,9 +1,11 @@
 use std::io;
 use std::fs::read_to_string;
+use crate::utils;
 
 /// Search for a keyword.
 pub fn search_entries(query: &str) -> io::Result<()> {
-    let content = read_to_string("Journal.csv")?;
+    let path = utils::journal_path()?;
+    let content = read_to_string(path)?;
     let mut lines = content.lines();
     lines.next(); // skip header
     let query_lower = query.to_lowercase();

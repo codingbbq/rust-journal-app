@@ -1,10 +1,12 @@
 // On the user added entries, do a filter on tags i. e strings start with #
 use std::io;
 use std::fs::read_to_string;
+use crate::utils;
 
 pub fn filter_entries(tag: &str) -> io::Result<()> {
     // Read the whole CSV file
-    let content = read_to_string("Journal.csv")?;
+    let path = utils::journal_path()?;
+    let content = read_to_string(path)?;
     let mut lines = content.lines();
 
     // The first line is a header
