@@ -5,4 +5,5 @@ pub fn print_help() {
     println!(" cargo run -- list");
     println!(" cargo run -- search <keyword>");
     println!(" cargo run -- stats");
+    println!(" cargo run -- filter <keyword>");
 }

@@ -98,3 +98,23 @@ fn ensure_journal_file() -> io::Result<()> {
     Ok(())
 }
 *This transcript has been curated for clarity and brevity, preserving the essential learning journey while removing redundant conversational noise.*
+
+## Filter command implementation
+- Added a `filter` sub‑command that reads `Journal.csv`, skips the header, extracts the tags column, and prints only rows whose tag list contains the user‑provided tag (case‑insensitive).
+- Implemented in `src/commands/filter.rs` using `read_to_string`, `splitn(3, ",")`, and `iter().any(|t| t.eq_ignore_ascii_case(tag))` to check for a matching tag.
+- Updated `main.rs` to route the `filter` command and added help text.
+
+## Explanation of `Some` in the filter code
+- `lines.next()` returns an `Option<&str>`; `Some(line)` means a line exists, `None` means the iterator is exhausted.
+- `if let Some(header) = lines.next() { … }` pattern‑matches the `Some` variant, binding the line to `header` and executing the block only when a line is present.
+- This is not a method like JavaScript’s `.some()`. It is the `Some` variant of Rust’s `Option` enum used to represent optional values.
+- The code therefore prints the CSV header only when the file actually contains a first line.
+
+## Clap CLI Refactor
+- Replaced manual `env::args` parsing with the declarative `clap` API.
+- Added `src/cli.rs` defining `Cli` (top‑level parser) and `Commands` (sub‑commands).
+- Updated `main.rs` to call `Cli::parse()` and dispatch via `match cli.command`.
+- Added `clap` dependency (`clap = { version = "4", features = ["derive"] }`) to `Cargo.toml`.
+- Verified sub‑commands: `add`, `list`, `search`, `stats`, `filter`, `help`, and the auto‑generated `--help`.
+- The transcript now records this refactor for future reference.
+

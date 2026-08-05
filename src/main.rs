@@ -46,6 +46,16 @@ fn run(args: Vec<String>) -> io::Result<()> {
             commands::search_entries(&query)?;    
         },
         "stats" => commands::show_stats()?,
+        "filter" => {
+            if args.len() < 3 {
+                eprintln!("Please provide a tag to filter by, eg. cargo run -- filter rust");
+                return Ok(());
+            }
+
+            let tag = args[2..].join(" ");
+            commands::filter_entries(&tag)?;
+        },
+        "help" => commands::print_help(),
         _ => {
             eprintln!("Unknonwn command: {}", command);
             commands::print_help();

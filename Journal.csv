@@ -1,6 +1,3 @@
-Timestamp,Journal Entry
-2026-08-01 15:26:49,"First Journal Entry"
-2026-08-01 15:27:14,"Second Journal Entry"
-2026-08-01 15:27:29,"Third Journal Entry"
-2026-08-02 16:33:29,"Another Entry"
-2026-08-02 17:11:42,"Another Entry with modular code"
+Timestamp,Journal Entry,Tags
+2026-08-05 11:49:34,"This is my first #rust entry","rust"
+2026-08-05 11:50:05,"Another #rust entry with #hashtag","rust,hashtag"

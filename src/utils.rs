@@ -8,7 +8,7 @@ pub fn ensure_journal_file() -> io::Result<()> {
     let file_path = Path::new("Journal.csv");
     if !file_path.exists() {
         let mut file = File::create(file_path)?;
-        file.write_all(b"Timestamp,Journal Entry\n")?;
+        file.write_all(b"Timestamp,Journal Entry,Tags\n")?;
         println!("Journal.csv created with header");
     }
     Ok(())
@@ -27,4 +27,12 @@ pub fn format_csv_field(input: &str) -> String {
 /// Double‑quote any `"` characters so the CSV stays valid.
 pub fn escape_csv(input: &str) -> String {
     input.replace('\"', "\"\"")
+}
+
+/// Extract all tags from a string (words starting with #).
+pub fn extract_tags(text: &str) -> Vec<String> {
+    text.split_whitespace()
+        .filter(|w| w.starts_with('#'))
+        .map(|w| w.trim_start_matches('#').to_string())
+        .collect()
 }
